@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import { Col, Container, Form, Button } from "react-bootstrap";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 class LoginForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: "",
       email: "",
       password: "",
       redirect: false,
@@ -30,16 +32,33 @@ class LoginForm extends Component {
   };
 
   handleSubmit = (e) => {
+    const self = this;
     e.preventDefault();
-    this.setState({
-      redirect: true,
-    });
+    const userObject = {
+      email: self.state.email,
+      password: self.state.password,
+    };
+
+    axios
+      .post("http://localhost:4000/users/login", userObject)
+      .then(function (res) {
+        if (res.data.ok) {
+          self.setState({
+            id: res.data.usuario._id,
+            redirect: true,
+          });
+        }
+      })
+      .catch((error) => alert(error));
   };
 
   render() {
     const { redirect } = this.state;
+    console.log(this.state.id);
     if (redirect) {
-      return <Redirect to="/home" />;
+      return (
+        <Redirect to={{ pathname: "/profile", state: { id: this.state.id } }} />
+      );
     }
     return (
       <Col md={6} xs="auto" className="align-items-center">
