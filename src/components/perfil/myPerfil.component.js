@@ -11,12 +11,12 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import fondo from "../../imagenes/FondoPerfilPruebasVacunas.jpeg";
-
+import axios from "axios";
 export default class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      file: require("../../imagenes/placeholder_image.png").default,
+      id: "",
       disabled: true,
       pruebas: [
         {
@@ -47,12 +47,126 @@ export default class Search extends Component {
           eps: "Sanitas",
         },
       ],
+      user: [],
     };
+    this.getNombre = this.getNombre.bind(this);
+    this.getApellido = this.getApellido.bind(this);
+    this.getCedula = this.getCedula.bind(this);
+    this.getNacimiento = this.getNacimiento.bind(this);
+    this.getCelular = this.getCelular.bind(this);
+    this.getTelfijo = this.getTelfijo.bind(this);
+    this.getDireccion = this.getDireccion.bind(this);
+    this.getEps = this.getEps.bind(this);
+    this.getDepartamento = this.getDepartamento.bind(this);
+    this.getMunicipio = this.getMunicipio.bind(this);
+    this.getEmail = this.getEmail.bind(this);
   }
-
+  getNombre = (e) => {
+    let nombres = e.target.value;
+    const user = { ...this.state.user };
+    user.nombres = nombres;
+    this.setState({ user });
+  };
+  getApellido = (e) => {
+    let apellidos = e.target.value;
+    const user = { ...this.state.user };
+    user.apellidos = apellidos;
+    this.setState({ user });
+  };
+  getCedula = (e) => {
+    let cedula = e.target.value;
+    const user = { ...this.state.user };
+    user.cedula = cedula;
+    this.setState({ user });
+  };
+  getNacimiento = (e) => {
+    let nacimiento = e.target.value;
+    const user = { ...this.state.user };
+    user.nacimiento = nacimiento;
+    this.setState({ user });
+  };
+  getCelular = (e) => {
+    let celular = e.target.value;
+    const user = { ...this.state.user };
+    user.celular = celular;
+    this.setState({ user });
+  };
+  getTelfijo = (e) => {
+    let telfijo = e.target.value;
+    const user = { ...this.state.user };
+    user.telfijo = telfijo;
+    this.setState({ user });
+  };
+  getDireccion = (e) => {
+    let direccion = e.target.value;
+    const user = { ...this.state.user };
+    user.direccion = direccion;
+    this.setState({ user });
+  };
+  getEps = (e) => {
+    let eps = e.target.value;
+    const user = { ...this.state.user };
+    user.eps = eps;
+    this.setState({ user });
+  };
+  getDepartamento = (e) => {
+    let departamento = e.target.value;
+    const user = { ...this.state.user };
+    user.departamento = departamento;
+    this.setState({ user });
+  };
+  getMunicipio = (e) => {
+    let municipio = e.target.value;
+    const user = { ...this.state.user };
+    user.municipio = municipio;
+    this.setState({ user });
+  };
+  getEmail = (e) => {
+    let email = e.target.value;
+    const user = { ...this.state.user };
+    user.email = email;
+    this.setState({ user });
+  };
+  componentDidMount() {
+    const self = this;
+    axios
+      .get("http://localhost:4000/users/" + self.props.location.state.id)
+      .then((res) => {
+        self.setState({ user: res.data });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   handleGameClik() {
     this.setState({ disabled: !this.state.disabled });
   }
+  handleActualizar = (e) => {
+    const self = this;
+    e.preventDefault();
+    const userObject = {
+      foto: self.state.user.foto,
+      nombres: self.state.user.nombres,
+      apellidos: self.state.user.apellidos,
+      cedula: self.state.user.cedula,
+      nacimiento: self.state.user.nacimiento,
+      celular: self.state.user.celular,
+      telfijo: self.state.user.telfijo,
+      direccion: self.state.user.direccion,
+      eps: self.state.user.eps,
+      departamento: self.state.user.departamento,
+      municipio: self.state.user.municipio,
+      email: self.state.user.email,
+    };
+    axios
+      .put(
+        `http://localhost:4000/users/update/` + self.state.user._id,
+        userObject
+      )
+      .then(function (res) {
+        window.location.reload();
+      });
+  };
 
   render() {
     return (
@@ -77,7 +191,7 @@ export default class Search extends Component {
                 </h1>
                 <Col md={6}>
                   <Image
-                    src={this.state.file}
+                    src={`data:image/png;base64,${this.state.user.foto}`}
                     className="border border-dark h-100 w-100 m-auto"
                   ></Image>
                 </Col>
@@ -87,7 +201,12 @@ export default class Search extends Component {
                     className="my-3 h3 text-dark m-auto"
                   >
                     <Form.Label>Nombes</Form.Label>
-                    <Form.Control placeholder="Ingresa tus nombres" required />
+                    <Form.Control
+                      placeholder="Ingresa tus nombres"
+                      required
+                      value={this.state.user.nombres || ""}
+                      onChange={this.getNombre}
+                    />
                   </Form.Group>
                   <Form.Group
                     controlId="apellidos"
@@ -97,6 +216,8 @@ export default class Search extends Component {
                     <Form.Control
                       placeholder="Ingresa tus apellidos"
                       required
+                      value={this.state.user.apellidos || ""}
+                      onChange={this.getApellido}
                     />
                   </Form.Group>
                   <Form.Group
@@ -110,6 +231,8 @@ export default class Search extends Component {
                       max="9999999999"
                       placeholder="Ingresa tu número de cédula"
                       required
+                      value={this.state.user.cedula || ""}
+                      onChange={this.getCedula}
                     />
                   </Form.Group>
                   <Form.Group
@@ -117,7 +240,12 @@ export default class Search extends Component {
                     className="my-3 h3 text-dark m-auto"
                   >
                     <Form.Label>Fecha de nacimiento</Form.Label>
-                    <Form.Control type="date" required />
+                    <Form.Control
+                      type="date"
+                      required
+                      value={this.state.user.nacimiento || ""}
+                      onChange={this.getNacimiento}
+                    />
                   </Form.Group>
                 </Col>
               </Row>
@@ -134,6 +262,8 @@ export default class Search extends Component {
                       max="9999999999"
                       placeholder="Ingresa tu número de teléfono celular"
                       required
+                      value={this.state.user.celular || ""}
+                      onChange={this.getCelular}
                     />
                   </Form.Group>
                   <Form.Group
@@ -144,6 +274,8 @@ export default class Search extends Component {
                     <Form.Control
                       placeholder="Escribe el nombre de tu EPS"
                       required
+                      value={this.state.user.eps || ""}
+                      onChange={this.getEps}
                     />
                   </Form.Group>
                   <Form.Group
@@ -154,6 +286,8 @@ export default class Search extends Component {
                     <Form.Control
                       placeholder="Ingresa tus departamento de residencia"
                       required
+                      value={this.state.user.departamento || ""}
+                      onChange={this.getDepartamento}
                     />
                   </Form.Group>
                 </Col>
@@ -167,6 +301,8 @@ export default class Search extends Component {
                       type="email"
                       placeholder="Ingresa un correo electrónico"
                       required
+                      value={this.state.user.email || ""}
+                      onChange={this.getEmail}
                     />
                   </Form.Group>
                   <Form.Group
@@ -174,7 +310,11 @@ export default class Search extends Component {
                     className="my-3 h3 text-dark m-auto"
                   >
                     <Form.Label>Dirección de residencia</Form.Label>
-                    <Form.Control placeholder="Ingresa tus dirección de residencia" />
+                    <Form.Control
+                      placeholder="Ingresa tus dirección de residencia"
+                      value={this.state.user.direccion || ""}
+                      onChange={this.getDireccion}
+                    />
                   </Form.Group>
                   <Form.Group
                     controlId="municipio"
@@ -184,6 +324,8 @@ export default class Search extends Component {
                     <Form.Control
                       placeholder="Ingresa tus municipio de residencia"
                       required
+                      value={this.state.user.municipio || ""}
+                      onChange={this.getMunicipio}
                     />
                   </Form.Group>
                 </Col>
@@ -203,6 +345,7 @@ export default class Search extends Component {
                 type="button"
                 className="btn btn-success btn-block h6 mt-4 mb-0"
                 hidden={true ? this.state.disabled : false}
+                onClick={this.handleActualizar.bind(this)}
               >
                 <span className="h6 text-white">Actualizar</span>
               </Button>
