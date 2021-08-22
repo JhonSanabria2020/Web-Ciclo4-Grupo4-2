@@ -44,9 +44,11 @@ class LoginForm extends Component {
       .then(function (res) {
         if (res.data.ok) {
           self.setState({
-            id: res.data.usuario._id,
+            id: res.data.id,
             redirect: true,
           });
+          const token = res.data.token;
+          window.localStorage.setItem("token", token);
         }
       })
       .catch((error) => alert(error));
@@ -54,7 +56,6 @@ class LoginForm extends Component {
 
   render() {
     const { redirect } = this.state;
-    console.log(this.state.id);
     if (redirect) {
       return (
         <Redirect to={{ pathname: "/profile", state: { id: this.state.id } }} />
