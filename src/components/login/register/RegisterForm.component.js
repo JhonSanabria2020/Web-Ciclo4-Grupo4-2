@@ -139,9 +139,11 @@ export default class SignUp extends Component {
       .post("http://localhost:4000/users/register/", userObject)
       .then(function (res) {
         self.setState({
-          id: res.data._id,
+          id: res.data.id,
           redirect: true,
         });
+        const token = res.data.token;
+        window.localStorage.setItem("token", token);
       })
       .catch((error) => alert(error));
   };

@@ -129,8 +129,14 @@ export default class Search extends Component {
   };
   componentDidMount() {
     const self = this;
+    const token = window.localStorage.getItem("token");
     axios
-      .get("http://localhost:4000/users/" + self.props.location.state.id)
+      .get("http://localhost:4000/users/" + self.props.location.state.id, {
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": token,
+        },
+      })
       .then((res) => {
         self.setState({ user: res.data });
       })
@@ -144,6 +150,10 @@ export default class Search extends Component {
   handleActualizar = (e) => {
     const self = this;
     e.preventDefault();
+    const { token } = window.localStorage.getItem("token");
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
     const userObject = {
       foto: self.state.user.foto,
       nombres: self.state.user.nombres,
@@ -161,7 +171,8 @@ export default class Search extends Component {
     axios
       .put(
         `http://localhost:4000/users/update/` + self.state.user._id,
-        userObject
+        userObject,
+        config
       )
       .then(function (res) {
         window.location.reload();
@@ -191,7 +202,7 @@ export default class Search extends Component {
                 </h1>
                 <Col md={6}>
                   <Image
-                    src={`data:image/png;base64,${this.state.user.foto}`}
+                    src={this.state.user.foto}
                     className="border border-dark h-100 w-100 m-auto"
                   ></Image>
                 </Col>
